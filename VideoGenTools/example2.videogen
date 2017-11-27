@@ -1,8 +1,8 @@
 @author "IL(A)? students"
 VideoGen {
 	
-	mandatory videoseq v1 "/home/aferey/Documents/IDM/Video/exemple3.mp4"
-	optional videoseq v2 "/home/aferey/Documents/IDM/Video/exemple1.mp4"
+	mandatory videoseq v1 "/home/aferey/Documents/IDM/Video/exemple3.mp4" { duration 2 filter negate text { content "sfsd" position TOP color "RED" size 104 } }
+	optional videoseq v2 "/home/aferey/Documents/IDM/Video/exemple1.mp4" { probability 95}
 	alternatives v3 {
 		videoseq v31 "/home/aferey/Documents/IDM/Video/exemple1.mp4"
 		videoseq v32 "/home/aferey/Documents/IDM/Video/exemple3.mp4"
