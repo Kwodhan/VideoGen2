@@ -38,6 +38,7 @@ class Generator {
 				}
 
 			} else if (media instanceof AlternativesMedia) {
+				
 				playlist.add(videoAlternative((media as AlternativesMedia).medias));
 			}
 		}
@@ -67,7 +68,9 @@ class Generator {
 		val rand = new Random();
 		val random = rand.nextInt(100);
 		var videochoose = null;
+		
 		for (MediaDescription media : descriptions) {
+			
 			if (media instanceof VideoDescription) {
 				val video = (media as VideoDescription);
 				if (video.probability >= random) {
@@ -78,6 +81,7 @@ class Generator {
 		}
 
 		if (videochoose === null) {
+			
 			val random2 = rand.nextInt(descriptions.size);
 			
 			return (descriptions.get(random2) as VideoDescription);
@@ -115,7 +119,7 @@ class Generator {
 	/**
 	 * Creer des vignettes pour toutes les videos
 	 */
-	def void createVignetteVarianteModel(VideoGeneratorModel videoGen) {
+	def void generateVignette(VideoGeneratorModel videoGen) {
 
 		for (Media media : videoGen.medias) {
 
@@ -240,7 +244,7 @@ class Generator {
 
 	}
 
-	def boolean  errorAlternativeInterpretation(AlternativesMedia alternative) {
+	def private boolean  errorAlternativeInterpretation(AlternativesMedia alternative) {
 		var total = 0;
 		var good = false;
 		for (MediaDescription media : alternative.medias) {
@@ -254,7 +258,7 @@ class Generator {
 					println("id déja présent : " + id);
 				}
 				total = total + (media as VideoDescription).probability;
-				var dir = System.getProperty("user.dir");
+				
 					var file = new File((media as VideoDescription).location)
 					
         			

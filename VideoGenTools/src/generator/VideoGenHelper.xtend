@@ -9,13 +9,15 @@ import org.xtext.example.mydsl.VideoGenStandaloneSetup
 
 class VideoGenHelper {
 	
-	def loadVideoGenerator(URI uri) {
+	def loadVideoGenerator(String path) {
+		var uri = URI.createURI(path);
 		VideoGenStandaloneSetup::doSetup
 		var res = new ResourceSetImpl().getResource(uri, true);
 		res.contents.get(0) as VideoGeneratorModel
 	}
 
-	def saveVideoGenerator(URI uri, VideoGeneratorModel videoGen) {
+	def saveVideoGenerator(String path, VideoGeneratorModel videoGen) {
+		var uri = URI.createURI(path);
 		var Resource rs = new ResourceSetImpl().createResource(uri);
 		rs.getContents.add(videoGen);
 		rs.save(new HashMap());

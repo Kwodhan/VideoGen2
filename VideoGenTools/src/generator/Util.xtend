@@ -2,18 +2,19 @@ package generator
 
 import java.io.BufferedReader
 import java.io.BufferedWriter
+import java.io.File
 import java.io.FileWriter
 import java.io.IOException
 import java.io.InputStreamReader
-import java.util.List
-import org.xtext.example.mydsl.videoGen.VideoDescription
-import java.io.File
 import java.nio.file.Files
-import java.time.LocalDateTime
 import java.nio.file.StandardCopyOption
-import org.xtext.example.mydsl.videoGen.NegateFilter
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.List
 import org.xtext.example.mydsl.videoGen.BlackWhiteFilter
 import org.xtext.example.mydsl.videoGen.FlipFilter
+import org.xtext.example.mydsl.videoGen.NegateFilter
+import org.xtext.example.mydsl.videoGen.VideoDescription
 import org.xtext.example.mydsl.videoGen.VideoText
 
 class Util {
@@ -76,7 +77,7 @@ val private DIR_TEMP="/tmp/"
 	 	
 	 	var p1 = Runtime.runtime.exec(command);
 		p1.waitFor;
-		printError(p1);
+		
 		return locationOutput;
 	 }
 	 /**
@@ -91,7 +92,7 @@ val private DIR_TEMP="/tmp/"
 	 	var command1 = ffmpegPerdiod(video.location,locationOutput,mins,secs);
 		var p1 = Runtime.runtime.exec(command1);
 		p1.waitFor;
-		printError(p1);
+		
 		return locationOutput;
 	 }
 	
@@ -119,10 +120,10 @@ val private DIR_TEMP="/tmp/"
 
 	 	var locationOutput = DIR_TEMP+"t_"+Util.getID(video);
 		var command1 = ffmpegAddText(video.location,locationOutput,"fontfile=/usr/share/fonts/truetype/freefont/FreeSerif.ttf:text='"+text+"':fontcolor="+color+":fontsize="+size+":box=1:boxcolor=black@0.5:boxborderw=5:"+x+":"+y);
-		println(command1)
+		
 		var p1 = Runtime.runtime.exec(command1);
 		p1.waitFor;
-		printError(p1);
+		
 		return locationOutput;
 		
 	}
@@ -135,11 +136,11 @@ val private DIR_TEMP="/tmp/"
 		var command1 = ffmpegPaletteGen(locationVideo);
 		var p1 = Runtime.runtime.exec(command1);
 		p1.waitFor;
-		printError(p1);
+		
 		var command2 = ffmpegGenerateGif(locationVideo,locationOutput);
 		var p2 = Runtime.runtime.exec(command2);
 		p2.waitFor;
-		printError(p2);
+		
 		return locationOutput;
 	}
 	/**
@@ -172,16 +173,16 @@ val private DIR_TEMP="/tmp/"
 			
 			Dofilter(video);
 		}
-		writePlaylist(playlist);
-		var command = ffmpegConcatenateCommand("output.ffconcat", outputPathFile);
-		println(command);
+		var nameFile = writePlaylist(playlist);
+		var command = ffmpegConcatenateCommand(nameFile, outputPathFile);
+		
 		var p = Runtime.runtime.exec(command)
 		p.waitFor
-		printError(p);
+		
 	}
 	
 	def private VideoDescription Dofilter(VideoDescription video){
-		println(video);
+		
 		var source = new File(video.location);
 		var dest = new File(DIR_TEMP +Util.getID(video));
 		Files.copy(source.toPath,dest.toPath,StandardCopyOption.REPLACE_EXISTING);
@@ -189,8 +190,7 @@ val private DIR_TEMP="/tmp/"
 		if(video.duration != 0){
 			video.location = duration(video);
 		}
-		println(video.location);
-		println(video.filter)
+		
 		if(video.filter !== null){
 			video.location = filter(video);
 		}
@@ -198,7 +198,7 @@ val private DIR_TEMP="/tmp/"
 		if(video.text !== null){
 			video.location = addText(video,video.text);
 		}
-		println(video.location);
+		
 		return video;
 	}
 	
@@ -227,7 +227,7 @@ val private DIR_TEMP="/tmp/"
 		var string = "";
 		while ((ligne = output.readLine()) !== null) {
 			string += ligne;
-			System.out.println(ligne);
+			
 		}
 		return string;
 	}
@@ -237,17 +237,20 @@ val private DIR_TEMP="/tmp/"
 	 */
 	def private String writePlaylist(List<VideoDescription> playlist) throws IOException {
 		var string = "";
-		val writer = new BufferedWriter(new FileWriter("output.ffconcat"));
+		var date = Calendar.getInstance().getTime();
+        var sdf = new SimpleDateFormat("MMdd_HHmmss_SSS");
+        var nameFile = DIR_TEMP+sdf.format(date)+".ffconcat";
+		val writer = new BufferedWriter(new FileWriter(nameFile));
 		
 		for (VideoDescription video : playlist) {
-			println(video.location);
+			
 			string += "file '" + video.location + "'\n";
 			writer.write("file '" + video.location + "'\n");
 		}
 
 		writer.close();
 
-		return string;
+		return nameFile;
 	}
 	
 	def private static String getID(VideoDescription video){
