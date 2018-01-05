@@ -176,9 +176,9 @@ class Generator {
 						println("id déja présent : " + id);
 						good = true;
 					}
-
-					var file = new File((media.description as VideoDescription).location)
-
+					var path = (media.description as VideoDescription).location.replaceFirst("^~",System.getProperty("user.home"));
+					var file = new File(path)
+					
 					if (!file.exists) {
 						println(id + " : le fichier n'existe pas");
 						good = true;
@@ -244,8 +244,8 @@ class Generator {
 
 					}
 
-					var file = new File((media.description as VideoDescription).location)
-
+					var path = (media.description as VideoDescription).location.replaceFirst("^~",System.getProperty("user.home"));
+					var file = new File(path)
 					if (!file.exists) {
 						println(id + " : le fichier n'existe pas");
 						good = true;
@@ -278,8 +278,9 @@ class Generator {
 					println("id déja présent : " + id);
 				}
 				total = total + (media as VideoDescription).probability;
+				var path = (media as VideoDescription).location.replaceFirst("^~",System.getProperty("user.home"));
+				var file = new File(path)
 
-				var file = new File((media as VideoDescription).location)
 
 				if (!file.exists) {
 					println(id + " : le fichier n'existe pas");

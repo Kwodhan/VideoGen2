@@ -5,13 +5,12 @@ import generator.VideoGenHelper
 import java.util.ArrayList
 
 import static org.junit.Assert.*
-import org.junit.Ignore
 
 class Test {
 	
 	var files = new ArrayList<String>;
 	var badfiles = new ArrayList<String>;
-	@Ignore
+	
 	@org.junit.Test
 	public def void testInterpretation(){
 		files.add("videogenTestFile/example1.videogen");
@@ -40,7 +39,7 @@ class Test {
 		}
 		
 	}
-	@Ignore
+	
 	@org.junit.Test
 	public def void testFilter(){
 		val video = new VideoGenHelper().loadVideoGenerator("videogenTestFile/example4.videogen");
@@ -48,7 +47,7 @@ class Test {
 		assertFalse(generetor.hasError(video));
 		generetor.generate(video,"/tmp/example4.mp4");
 	}
-	@Ignore
+	
 	@org.junit.Test
 	public def void testText(){
 		val video = new VideoGenHelper().loadVideoGenerator("videogenTestFile/example5.videogen");
@@ -56,7 +55,7 @@ class Test {
 		assertFalse(generetor.hasError(video));
 		generetor.generate(video,"/tmp/example5.mp4");
 	}
-	@Ignore
+	
 	@org.junit.Test
 	public def void testAllSimple(){
 		val video = new VideoGenHelper().loadVideoGenerator("videogenTestFile/example6.videogen");
@@ -64,7 +63,7 @@ class Test {
 		assertFalse(generetor.hasError(video));
 		generetor.generate(video,"/tmp/example6.mp4");
 	}
-	@Ignore
+	
 	@org.junit.Test
 	public def void testAllComplex(){
 		val video = new VideoGenHelper().loadVideoGenerator("videogenTestFile/example7.videogen");
@@ -72,7 +71,7 @@ class Test {
 		assertFalse(generetor.hasError(video));
 		generetor.generate(video,"/tmp/example7.mp4");
 	}
-	@Ignore
+	
 	@org.junit.Test
 	public def void testSimpleGif(){
 		val video = new VideoGenHelper().loadVideoGenerator("videogenTestFile/example8.videogen");
@@ -87,6 +86,14 @@ class Test {
 		var generetor = new Generator();
 		assertFalse(generetor.hasError(video));
 		generetor.generateGif(video,"/tmp/example9.gif");
+	}
+	
+	@org.junit.Test
+	public def void testVignette(){
+		val video = new VideoGenHelper().loadVideoGenerator("videogenTestFile/example1.videogen");
+		var generetor = new Generator();
+		assertFalse(generetor.hasError(video));
+		generetor.generateVignette(video)
 	}
 	
 }

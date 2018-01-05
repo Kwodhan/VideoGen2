@@ -24,10 +24,10 @@ class VideoGenEtude {
 	/**
 	 * Liste toutes les variantes
 	 */
-	def Integer VarianteModel(VideoGeneratorModel videoGen) {
+	def Integer varianteModel(VideoGeneratorModel videoGen,String path) {
+		listeId = new ArrayList<String>();
 		var nb_variante = 1;
-		//val videoGen = new VideoGenHelper().loadVideoGenerator(URI.createURI("example2.videogen"))
-		//assertNotNull(videoGen)
+
 		var variante = new ArrayList<List<VideoDescription>>;
 
 		variante.add(new ArrayList())
@@ -76,10 +76,10 @@ class VideoGenEtude {
 		var i = 0;
 		for (List<VideoDescription> liste : variante) {
 			i++;
-			util.generateVideo(liste, "resultat" + i + ".mp4");
-			util.generateGif("resultat" + i + ".mp4","resultat" + i + ".gif");
+			util.generateVideo(liste, "/tmp/resultat" + i + ".mp4");
+			util.generateGif("/tmp/resultat" + i + ".mp4","/tmp/resultat" + i + ".gif");
 		}
-		writeCSV("hello.csv", variante, nb_variante);
+		writeCSV(path, variante, nb_variante);
 		
 		return variante.size;
 	}
@@ -140,12 +140,14 @@ class VideoGenEtude {
 			}
 			var size = 0l;
 			for (VideoDescription media : liste) {
-				var file = new File(media.location);
+				var path = media.location.replaceFirst("^~",System.getProperty("user.home"));
+					
+				var file = new File(path);
 				size = size + file.length;
 			}
 			writer.write(size + ";");
-			writer.write(new File("resultat" + i + ".mp4").length + ";");
-			writer.write(new File("resultat" + i + ".gif").length + ";\n");
+			writer.write(new File("/tmp/resultat" + i + ".mp4").length + ";");
+			writer.write(new File("/tmp/resultat" + i + ".gif").length + ";\n");
 		}
 
 		writer.close();

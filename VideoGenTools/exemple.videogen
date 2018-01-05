@@ -1,6 +1,5 @@
-VideoGen { 
-mandatory videoseq v4 "/home/aferey/Video/TEST/exemple3.mp4" { probability 0}
-	optional videoseq v12 "/home/aferey/Video/TEST/exemple1.mp4" { probability 100}
-	optional videoseq v13 "/home/aferey/Video/TEST/exemple2.mp4" { probability 1}
-
+VideoGen {
+	mandatory videoseq v0 "~/Video/TEST/exemple1.mp4" 
+	mandatory videoseq v01 "~/Video/TEST/exemple2.mp4" 
+	
 }

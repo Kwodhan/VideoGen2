@@ -61,17 +61,19 @@ val private DIR_TEMP="/tmp/"
 	 	var locationOutput = DIR_TEMP +"f_"+Util.getID(video);
 	 	var choise = video.filter;
 	 	var command ="";
+	 	var path = video.location.replaceFirst("^~",System.getProperty("user.home"));
 	 	if(choise instanceof NegateFilter){
-	 		command = ffmpegNegate(video.location,locationOutput)
+	 		
+	 		command = ffmpegNegate(path,locationOutput)
 	 		
 	 	}else if(choise instanceof BlackWhiteFilter){
-	 		command = ffmpegBlackAndWhite(video.location,locationOutput)
+	 		command = ffmpegBlackAndWhite(path,locationOutput)
 	 	}else if(choise instanceof FlipFilter){
 	 		switch ((choise as FlipFilter).orientation){
-	 		case "h":  command = ffmpegFlip(video.location,"hflip",locationOutput)
-	 		case "horizontal":  command = ffmpegFlip(video.location,"hflip",locationOutput)
-	 		case "v":  command = ffmpegFlip(video.location,"vflip",locationOutput)
-	 		case "vertical":  command = ffmpegFlip(video.location,"vflip",locationOutput)
+	 		case "h":  command = ffmpegFlip(path,"hflip",locationOutput)
+	 		case "horizontal":  command = ffmpegFlip(path,"hflip",locationOutput)
+	 		case "v":  command = ffmpegFlip(path,"vflip",locationOutput)
+	 		case "vertical":  command = ffmpegFlip(path,"vflip",locationOutput)
 	 		}
 	 	}
 	 	
@@ -90,7 +92,8 @@ val private DIR_TEMP="/tmp/"
 	 	var seconde = video.duration;
 	 	var mins = seconde / 60;
     	var secs = seconde - mins * 60;
-	 	var command1 = ffmpegPerdiod(video.location,locationOutput,mins,secs);
+    	var path = video.location.replaceFirst("^~",System.getProperty("user.home"));
+	 	var command1 = ffmpegPerdiod(path,locationOutput,mins,secs);
 		var p1 = Runtime.runtime.exec(command1);
 		p1.waitFor;
 		
@@ -103,6 +106,7 @@ val private DIR_TEMP="/tmp/"
 	def String addText(VideoDescription video,VideoText videoconfig){
 		var text = videoconfig.content;
 		var position = videoconfig.position;
+		var path = video.location.replaceFirst("^~",System.getProperty("user.home"));
 		var x = "x=(w-text_w)/2";
 		var y = "y=(h-text_h)/2";
 		var color ="white";
@@ -120,7 +124,7 @@ val private DIR_TEMP="/tmp/"
 	 	}
 
 	 	var locationOutput = DIR_TEMP+"t_"+Util.getID(video);
-		var command1 = ffmpegAddText(video.location,locationOutput,"fontfile=/usr/share/fonts/truetype/freefont/FreeSerif.ttf:text='"+text+"':fontcolor="+color+":fontsize="+size+":box=1:boxcolor=black@0.5:boxborderw=5:"+x+":"+y);
+		var command1 = ffmpegAddText(path,locationOutput,"fontfile=/usr/share/fonts/truetype/freefont/FreeSerif.ttf:text='"+text+"':fontcolor="+color+":fontsize="+size+":box=1:boxcolor=black@0.5:boxborderw=5:"+x+":"+y);
 		
 		var p1 = Runtime.runtime.exec(command1);
 //		printInput(p1)
@@ -136,7 +140,8 @@ val private DIR_TEMP="/tmp/"
 	 * créer un gif pour une videoDescription
 	 */
 	def String generateGif(VideoDescription video){
-		var locationVideo = video.location;
+		var path = video.location.replaceFirst("^~",System.getProperty("user.home"));
+		var locationVideo = path.replaceFirst("^~",System.getProperty("user.home"));
 		var locationOutput = locationVideo.substring(0,locationVideo.length() - 3)+"gif"
 		var command1 = ffmpegPaletteGen(locationVideo);
 		var p1 = Runtime.runtime.exec(command1);
@@ -167,7 +172,8 @@ val private DIR_TEMP="/tmp/"
 	 * créer une vignette pour une VideoDescription à l'emplacement de celle-ci
 	 */
 	def String generateVignette(VideoDescription video){
-		var locationVideo = video.location;
+		var locationVideo = video.location.replaceFirst("^~",System.getProperty("user.home"));
+		
 		var locationOutput = locationVideo.substring(0,locationVideo.length() - 3)+"png"
 		var command1 = ffmpegGeneretedVignette(locationVideo,
 			locationOutput);
@@ -180,7 +186,7 @@ val private DIR_TEMP="/tmp/"
 	 * Longueur d'une video en seconde
 	 */
 	def Float getDuration(VideoDescription video){
-		var locationVideo = video.location;
+		var locationVideo = video.location.replaceFirst("^~",System.getProperty("user.home"));
 		var command1 = ffmpegComputeDuration(locationVideo);
 		var p1 = Runtime.runtime.exec(command1)
 		p1.waitFor
@@ -207,7 +213,8 @@ val private DIR_TEMP="/tmp/"
 	
 	def private VideoDescription Dofilter(VideoDescription video){
 		//println(video.location);
-		var source = new File(video.location);
+		var path = video.location.replaceFirst("^~",System.getProperty("user.home"));
+		var source = new File(path);
 		var dest = new File(DIR_TEMP +Util.getID(video));
 		Files.copy(source.toPath,dest.toPath,StandardCopyOption.REPLACE_EXISTING);
 		video.location = dest.absolutePath;
@@ -269,9 +276,9 @@ val private DIR_TEMP="/tmp/"
 		val writer = new BufferedWriter(new FileWriter(nameFile));
 		
 		for (VideoDescription video : playlist) {
-			
-			string += "file '" + video.location + "'\n";
-			writer.write("file '" + video.location + "'\n");
+			var path = video.location.replaceFirst("^~",System.getProperty("user.home"));
+			string += "file '" + path + "'\n";
+			writer.write("file '" + path + "'\n");
 		}
 
 		writer.close();
