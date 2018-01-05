@@ -1,24 +1,9 @@
 @author "IL(A)? students"
 VideoGen {
-	
-	mandatory videoseq v1 "/home/aferey/Documents/IDM/Video/exemple3.mp4" { duration 2 filter negate text { content "sfsd" position TOP color "WHITE" size 104 } }
-	optional videoseq v2 "/home/aferey/Documents/IDM/Video/exemple1.mp4" { probability 95}
-	alternatives v3 {
-		videoseq v31 "/home/aferey/Documents/IDM/Video/exemple1.mp4" { duration 2 probability 49 filter b&w }
-		videoseq v32 "/home/aferey/Documents/IDM/Video/exemple3.mp4" { probability 51}
-	}
-	mandatory videoseq v4 "/home/aferey/Documents/IDM/Video/exemple3.mp4" { probability 1000}
-	optional videoseq v12 "/home/aferey/Documents/IDM/Video/exemple3.mp4" { probability 100}
-	alternatives v41 {
-		videoseq v311 "/home/aferey/Documents/IDM/Video/exemple1.mp4" { duration 2 probability 100 filter b&w }
-		videoseq v312 "/home/aferey/Documents/IDM/Video/exemple3.mp4" { probability 0 filter flip horizontal}
-	}
-	
-	alternatives v412 {
-		videoseq v3112 "/home/aferey/Documents/IDM/Video/exemple1.mp4" { duration 2 probability 100 filter b&w }
-		videoseq v3122 "/home/aferey/Documents/IDM/Video/exemple3.mp4" {  filter flip horizontal}
-	}
-	
-	optional videoseq v2 "/home/aferey/Documents/IDM/Video/exemple1.mp4" { probability 100}
-	optional videoseq v2 "/home/aferey/Documents/IDM/Video/exemple1.mp4" { probability 0}
+	mandatory videoseq v1 "/home/aferey/Video/TEST/exemple2.mp4" { duration 3 }
+	mandatory videoseq v2 "/home/aferey/Video/TEST/exemple2.mp4" { duration 3 filter b&w }
+	mandatory videoseq v3 "/home/aferey/Video/TEST/exemple2.mp4" { duration 3 filter flip h }
+	mandatory videoseq v4 "/home/aferey/Video/TEST/exemple2.mp4" { duration 3 filter flip v }
+	mandatory videoseq v5 "/home/aferey/Video/TEST/exemple2.mp4" { duration 3 filter negate }
+
 }

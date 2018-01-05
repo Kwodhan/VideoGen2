@@ -77,7 +77,7 @@ class VideoGenEtude {
 		for (List<VideoDescription> liste : variante) {
 			i++;
 			util.generateVideo(liste, "resultat" + i + ".mp4");
-			
+			util.generateGif("resultat" + i + ".mp4","resultat" + i + ".gif");
 		}
 		writeCSV("hello.csv", variante, nb_variante);
 		
@@ -124,7 +124,7 @@ class VideoGenEtude {
 			writer.write(id + ";");
 		}
 
-		writer.write("size;realsize\n")
+		writer.write("size;realsize;gifsize\n")
 
 		for (List<VideoDescription> liste : variante) {
 			i++
@@ -144,7 +144,8 @@ class VideoGenEtude {
 				size = size + file.length;
 			}
 			writer.write(size + ";");
-			writer.write(new File("resultat" + i + ".mp4").length + ";\n");
+			writer.write(new File("resultat" + i + ".mp4").length + ";");
+			writer.write(new File("resultat" + i + ".gif").length + ";\n");
 		}
 
 		writer.close();

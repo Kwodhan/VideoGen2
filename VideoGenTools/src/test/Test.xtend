@@ -5,13 +5,15 @@ import generator.VideoGenHelper
 import java.util.ArrayList
 
 import static org.junit.Assert.*
+import org.junit.Ignore
 
 class Test {
 	
 	var files = new ArrayList<String>;
 	var badfiles = new ArrayList<String>;
+	@Ignore
 	@org.junit.Test
-	public def void testFilter(){
+	public def void testInterpretation(){
 		files.add("videogenTestFile/example1.videogen");
 		files.add("videogenTestFile/example2.videogen");
 		files.add("videogenTestFile/example3.videogen");
@@ -22,6 +24,7 @@ class Test {
 		badfiles.add("videogenTestFile/example7Bad.videogen");
 		badfiles.add("videogenTestFile/example8Bad.videogen");
 		badfiles.add("videogenTestFile/example9Bad.videogen");
+
 		for(String file : files){
 			val video = new VideoGenHelper().loadVideoGenerator(file);
 			var generetor = new Generator();
@@ -36,6 +39,54 @@ class Test {
 			assertTrue(generetor.hasError(video));
 		}
 		
+	}
+	@Ignore
+	@org.junit.Test
+	public def void testFilter(){
+		val video = new VideoGenHelper().loadVideoGenerator("videogenTestFile/example4.videogen");
+		var generetor = new Generator();
+		assertFalse(generetor.hasError(video));
+		generetor.generate(video,"/tmp/example4.mp4");
+	}
+	@Ignore
+	@org.junit.Test
+	public def void testText(){
+		val video = new VideoGenHelper().loadVideoGenerator("videogenTestFile/example5.videogen");
+		var generetor = new Generator();
+		assertFalse(generetor.hasError(video));
+		generetor.generate(video,"/tmp/example5.mp4");
+	}
+	@Ignore
+	@org.junit.Test
+	public def void testAllSimple(){
+		val video = new VideoGenHelper().loadVideoGenerator("videogenTestFile/example6.videogen");
+		var generetor = new Generator();
+		assertFalse(generetor.hasError(video));
+		generetor.generate(video,"/tmp/example6.mp4");
+	}
+	@Ignore
+	@org.junit.Test
+	public def void testAllComplex(){
+		val video = new VideoGenHelper().loadVideoGenerator("videogenTestFile/example7.videogen");
+		var generetor = new Generator();
+		assertFalse(generetor.hasError(video));
+		generetor.generate(video,"/tmp/example7.mp4");
+	}
+	@Ignore
+	@org.junit.Test
+	public def void testSimpleGif(){
+		val video = new VideoGenHelper().loadVideoGenerator("videogenTestFile/example8.videogen");
+		var generetor = new Generator();
+		assertFalse(generetor.hasError(video));
+		generetor.generateGif(video,"/tmp/example8.gif");
+	}
+	
+	@org.junit.Test
+	public def void testComplexGif(){
+		val video = new VideoGenHelper().loadVideoGenerator("videogenTestFile/example9.videogen");
+		var generetor = new Generator();
+		assertFalse(generetor.hasError(video));
+		generetor.generateGif(video,"/tmp/example9.gif");
 	}
 	
 }

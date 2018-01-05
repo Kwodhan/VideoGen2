@@ -21,40 +21,40 @@ class Util {
 	
 	
 	def private String ffmpegConcatenateCommand(String mpegPlaylistFile, String outputPath) '''
-ffmpeg -y -f  concat -safe 0 -i «mpegPlaylistFile» -c copy  «outputPath»
-'''
-
+		ffmpeg -y -f  concat -safe 0 -i «mpegPlaylistFile» -c copy  «outputPath»
+	'''
+	
 	def private String ffmpegComputeDuration(String locationVideo) '''
-ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 «locationVideo»
-'''
+		ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 «locationVideo»
+	'''
 	def private String ffmpegGeneretedVignette(String locationVideo, String locationImage) '''
-ffmpeg -y -i «locationVideo» -r 1 -t 00:00:01 -ss 00:00:11 -f image2 «locationImage»
-'''
+		ffmpeg -y -i «locationVideo» -r 1 -t 00:00:01 -ss 00:00:11 -f image2 «locationImage»
+	'''
 	def private String ffmpegPaletteGen(String locationVideo) '''
-ffmpeg -y -ss 1 -t 3 -i «locationVideo» -vf fps=10,scale=320:-1:flags=lanczos,palettegen palette.png
-'''
+		ffmpeg -y -ss 1 -i «locationVideo» -vf fps=10,scale=320:-1:flags=lanczos,palettegen palette.png
+	'''
 	def private String ffmpegGenerateGif(String locationVideo, String locationOuptut) '''
-ffmpeg -y -ss 1 -t 3 -i «locationVideo» -i palette.png -filter_complex fps=10,scale=320:-1:flags=lanczos[x];[x][1:v]paletteuse «locationOuptut»
-'''
+		ffmpeg -y -ss 1 -i «locationVideo» -i palette.png -filter_complex fps=10,scale=320:-1:flags=lanczos[x];[x][1:v]paletteuse «locationOuptut»
+	'''
 	def private String ffmpegAddText(String locationVideo,String locationOuptut,String bullshit) '''
-ffmpeg -y -i «locationVideo» -vf drawtext=«bullshit» -c copy «locationOuptut»
-'''
-  	def private String ffmpegBlackAndWhite(String locationVideo,String locationOuptut) '''
-ffmpeg -y -i «locationVideo» -vf hue=s=0 -c copy «locationOuptut»
-'''
-  	def private String ffmpegNegate(String locationVideo,String locationOuptut) '''
-		ffmpeg -y -i «locationVideo» -vf lutrgb="r=negval:g=negval:b=negval" «locationOuptut»
+		ffmpeg -y -i «locationVideo» -vf drawtext=«bullshit» -c:a ac3 «locationOuptut»
 	'''
-  	def private String ffmpegFlip(String locationVideo,String typeflip,String locationOuptut) '''
-		ffmpeg -y -i «locationVideo» -vf «typeflip» «locationOuptut»
+	def private String ffmpegBlackAndWhite(String locationVideo,String locationOuptut) '''
+		ffmpeg -y -i «locationVideo» -vf hue=s=0 -c:a ac3 «locationOuptut»
 	'''
-  	def private String ffmpegPerdiod(String locationVideo,String locationOuptut,int minute,int second) '''
-ffmpeg -y -ss 00:00:00 -i «locationVideo» -t 00:«minute»:«second» -c copy «locationOuptut»
-'''
+	def private String ffmpegNegate(String locationVideo,String locationOuptut) '''
+		ffmpeg -y -i «locationVideo» -vf lutrgb=r=negval:g=negval:b=negval -c:a ac3 «locationOuptut»
+	'''
+	def private String ffmpegFlip(String locationVideo,String typeflip,String locationOuptut) '''
+		ffmpeg -y -i «locationVideo» -vf «typeflip» -c:a ac3 «locationOuptut»
+	'''
+	def private String ffmpegPerdiod(String locationVideo,String locationOuptut,int minute,int second) '''
+		ffmpeg -y -ss 00:00:00 -i «locationVideo» -t 00:«minute»:«second» -c:a ac3 «locationOuptut»
+	'''
 
 val private DIR_TEMP="/tmp/"
 	/**
-	 * 
+	 * applique la modification filter
 	 */
 	 def String filter(VideoDescription video){
 	 	
@@ -62,9 +62,10 @@ val private DIR_TEMP="/tmp/"
 	 	var choise = video.filter;
 	 	var command ="";
 	 	if(choise instanceof NegateFilter){
-	 		command = ffmpegBlackAndWhite(video.location,locationOutput)
-	 	}else if(choise instanceof BlackWhiteFilter){
 	 		command = ffmpegNegate(video.location,locationOutput)
+	 		
+	 	}else if(choise instanceof BlackWhiteFilter){
+	 		command = ffmpegBlackAndWhite(video.location,locationOutput)
 	 	}else if(choise instanceof FlipFilter){
 	 		switch ((choise as FlipFilter).orientation){
 	 		case "h":  command = ffmpegFlip(video.location,"hflip",locationOutput)
@@ -81,7 +82,7 @@ val private DIR_TEMP="/tmp/"
 		return locationOutput;
 	 }
 	 /**
-	 * 
+	 * applique la modification duration
 	 */
 	 def String duration(VideoDescription video){
 	 	
@@ -97,7 +98,7 @@ val private DIR_TEMP="/tmp/"
 	 }
 	
 	/**
-	 * add a text in a center of the video 
+	 * applique la modification text
 	 */
 	def String addText(VideoDescription video,VideoText videoconfig){
 		var text = videoconfig.content;
@@ -122,6 +123,8 @@ val private DIR_TEMP="/tmp/"
 		var command1 = ffmpegAddText(video.location,locationOutput,"fontfile=/usr/share/fonts/truetype/freefont/FreeSerif.ttf:text='"+text+"':fontcolor="+color+":fontsize="+size+":box=1:boxcolor=black@0.5:boxborderw=5:"+x+":"+y);
 		
 		var p1 = Runtime.runtime.exec(command1);
+//		printInput(p1)
+//		printError(p1)
 		p1.waitFor;
 		
 		return locationOutput;
@@ -129,7 +132,9 @@ val private DIR_TEMP="/tmp/"
 	}
 	
 	
-	
+	/**
+	 * créer un gif pour une videoDescription
+	 */
 	def String generateGif(VideoDescription video){
 		var locationVideo = video.location;
 		var locationOutput = locationVideo.substring(0,locationVideo.length() - 3)+"gif"
@@ -144,7 +149,22 @@ val private DIR_TEMP="/tmp/"
 		return locationOutput;
 	}
 	/**
-	 * 
+	 * créer un gif pour un fichier video
+	 */
+	def String generateGif(String locationVideo,String locationOutput ){
+		
+		var command1 = ffmpegPaletteGen(locationVideo);
+		var p1 = Runtime.runtime.exec(command1);
+		p1.waitFor;
+		
+		var command2 = ffmpegGenerateGif(locationVideo,locationOutput);
+		var p2 = Runtime.runtime.exec(command2);
+		p2.waitFor;
+		
+		return locationOutput;
+	}
+	/**
+	 * créer une vignette pour une VideoDescription à l'emplacement de celle-ci
 	 */
 	def String generateVignette(VideoDescription video){
 		var locationVideo = video.location;
@@ -157,7 +177,7 @@ val private DIR_TEMP="/tmp/"
 	}
 	
 	/**
-	 * Longueur d'une video
+	 * Longueur d'une video en seconde
 	 */
 	def Float getDuration(VideoDescription video){
 		var locationVideo = video.location;
@@ -177,12 +197,16 @@ val private DIR_TEMP="/tmp/"
 		var command = ffmpegConcatenateCommand(nameFile, outputPathFile);
 		
 		var p = Runtime.runtime.exec(command)
+		
+//		printInput(p)
+//		printError(p)
 		p.waitFor
+		
 		
 	}
 	
 	def private VideoDescription Dofilter(VideoDescription video){
-		
+		//println(video.location);
 		var source = new File(video.location);
 		var dest = new File(DIR_TEMP +Util.getID(video));
 		Files.copy(source.toPath,dest.toPath,StandardCopyOption.REPLACE_EXISTING);
@@ -197,6 +221,7 @@ val private DIR_TEMP="/tmp/"
 		
 		if(video.text !== null){
 			video.location = addText(video,video.text);
+			
 		}
 		
 		return video;
@@ -213,6 +238,7 @@ val private DIR_TEMP="/tmp/"
 		var string = "";
 		while ((ligne = output.readLine()) !== null) {
 			string += ligne;
+			//println(ligne);
 
 		}
 		return string;
@@ -227,7 +253,7 @@ val private DIR_TEMP="/tmp/"
 		var string = "";
 		while ((ligne = output.readLine()) !== null) {
 			string += ligne;
-			
+			println(ligne);
 		}
 		return string;
 	}

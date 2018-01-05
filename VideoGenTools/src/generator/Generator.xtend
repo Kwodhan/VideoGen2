@@ -32,17 +32,17 @@ class Generator {
 			} else if (media instanceof OptionalMedia) {
 				if (media.description instanceof VideoDescription) {
 					var video = videoOptional(media.description as VideoDescription)
-					if(video !== null){
+					if (video !== null) {
 						playlist.add(video);
 					}
 				}
 
 			} else if (media instanceof AlternativesMedia) {
-				
+
 				playlist.add(videoAlternative((media as AlternativesMedia).medias));
 			}
 		}
-		
+
 		// execute commande 
 		util.generateVideo(playlist, locationFileVideo);
 
@@ -51,7 +51,7 @@ class Generator {
 	def private VideoDescription videoOptional(VideoDescription description) {
 		val rand = new Random();
 		val random = rand.nextInt(100);
-		if (description.probability == 0 && 50 >= random) {	
+		if (description.probability == 0 && 50 >= random) {
 			return description;
 		} else if (description.probability >= random) {
 			return description;
@@ -60,7 +60,7 @@ class Generator {
 	}
 
 	def private VideoDescription videoMandatory(VideoDescription description) {
-		//println(description.location);
+		// println(description.location);
 		return description;
 	}
 
@@ -68,9 +68,9 @@ class Generator {
 		val rand = new Random();
 		val random = rand.nextInt(100);
 		var videochoose = null;
-		
+
 		for (MediaDescription media : descriptions) {
-			
+
 			if (media instanceof VideoDescription) {
 				val video = (media as VideoDescription);
 				if (video.probability >= random) {
@@ -81,16 +81,18 @@ class Generator {
 		}
 
 		if (videochoose === null) {
-			
+
 			val random2 = rand.nextInt(descriptions.size);
-			
+
 			return (descriptions.get(random2) as VideoDescription);
 		}
 
 	}
-	
-	def void generateGif(VideoGeneratorModel videoGen){
- 
+	/**
+	 * Creer des gif pour toutes les videos
+	 */
+	def void generateGifForEveryVideo(VideoGeneratorModel videoGen) {
+
 		for (Media media : videoGen.medias) {
 
 			if (media instanceof MandatoryMedia) {
@@ -115,7 +117,14 @@ class Generator {
 			}
 		}
 	}
-
+	/**
+	 * Creer un gif pour une specification videogen
+	 */
+	def void generateGif(VideoGeneratorModel videoGen,String locationFileVideo) {
+		var locationVideo = locationFileVideo.substring(0,locationFileVideo.length() - 3)+"mp4"
+		generate(videoGen,locationVideo);
+		util.generateGif(locationVideo,locationFileVideo);
+	}
 	/**
 	 * Creer des vignettes pour toutes les videos
 	 */
@@ -147,104 +156,115 @@ class Generator {
 
 	}
 
-	
 	def public boolean hasError(VideoGeneratorModel videoGen) {
-		
+
 		var good = false;
 		for (Media media : videoGen.medias) {
 
 			if (media instanceof MandatoryMedia) {
 				if (media.description instanceof VideoDescription) {
 					var id = (media.description as VideoDescription).videoid;
+					if(id === null) {
+						println("id null");
+						good = true;
+					}
+					
 					if (!listeid.contains(id)) {
 						listeid.add(id);
 
 					} else {
 						println("id déja présent : " + id);
-						good=true;
+						good = true;
 					}
-					
-					
+
 					var file = new File((media.description as VideoDescription).location)
-					
-        			
+
 					if (!file.exists) {
 						println(id + " : le fichier n'existe pas");
-						good=true;
+						good = true;
 					}
 					var video = (media.description as VideoDescription);
-					if(video.duration != 0){
-						if(video.duration >util.getDuration(video)) {
+					if (video.duration != 0) {
+						if (video.duration > util.getDuration(video)) {
 							println(id + " : duration est trop long");
-							good=true;
+							good = true;
 						}
-						
+
 					}
-					if(video.text !== null && video.text.color !== null){
-						switch(video.text.color){
-							case "RED":good=good
-							case "BLUE":good=good
-							case "GREEN":good=good
-							case "BLACK":good=good
-							case "WHITE":good=good
-							
-							default :{println(id + " : la couleur n'est pas valide");good=true}
+					if (video.text !== null) {
+						if (video.text.content.contains(" ")) {
+							println(id + " : doit comporter seulement un mot");
+							good = true;
+
 						}
 					}
-					
-					
+					if (video.text !== null && video.text.color !== null) {
+						switch (video.text.color) {
+							case "RED":
+								good = good
+							case "BLUE":
+								good = good
+							case "GREEN":
+								good = good
+							case "BLACK":
+								good = good
+							case "WHITE":
+								good = good
+							default: {
+								println(id + " : la couleur n'est pas valide");
+								good = true
+							}
+						}
+					}
 
 				}
 
 			} else if (media instanceof OptionalMedia) {
-				
+
 				if (media.description instanceof VideoDescription) {
-					
+
 					var id = (media.description as VideoDescription).videoid;
 					if (!listeid.contains(id)) {
 						listeid.add(id);
 
 					} else {
 						println("id déja présent : " + id);
-						good=true;
-						
+						good = true;
+
 					}
+
 					if ((media.description as VideoDescription).probability > 100) {
 						println(id + " : probalité doit être compris entre 0 et 100");
-						good=true;
-						
+						good = true;
+
 					}
 					if ((media.description as VideoDescription).probability < 0) {
 						println(id + " : probalité doit être compris entre 0 et 100");
-						good=true;
-						
+						good = true;
+
 					}
-					
-					
+
 					var file = new File((media.description as VideoDescription).location)
-					
-				
-        			
+
 					if (!file.exists) {
 						println(id + " : le fichier n'existe pas");
-						good=true;
+						good = true;
 					}
 
 				}
 
 			} else if (media instanceof AlternativesMedia) {
 
-				good = good ||  errorAlternativeInterpretation(media)
+				good = good || errorAlternativeInterpretation(media)
 
 			}
-			
 
 		}
 		return good;
 
 	}
 
-	def private boolean  errorAlternativeInterpretation(AlternativesMedia alternative) {
+	def private boolean errorAlternativeInterpretation(AlternativesMedia alternative) {
 		var total = 0;
 		var good = false;
 		for (MediaDescription media : alternative.medias) {
@@ -254,25 +274,24 @@ class Generator {
 					listeid.add(id);
 
 				} else {
-					good=true;
+					good = true;
 					println("id déja présent : " + id);
 				}
 				total = total + (media as VideoDescription).probability;
-				
-					var file = new File((media as VideoDescription).location)
-					
-        			
-					if (!file.exists) {
-						println(id + " : le fichier n'existe pas");
-						good=true;
-					}
+
+				var file = new File((media as VideoDescription).location)
+
+				if (!file.exists) {
+					println(id + " : le fichier n'existe pas");
+					good = true;
+				}
 			}
 		}
 
 		if (total != 100) {
 			if (total != 0) {
 				println(alternative.id + " : le total doit être de 100");
-				good=true;
+				good = true;
 			}
 		}
 		return good;
